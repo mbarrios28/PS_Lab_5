@@ -1,13 +1,26 @@
 package com.pruebas.model;
-
+import com.pruebas.service.ServicioPrecio;
 import java.util.ArrayList;
+import java.util.List;
 
 public class CarritoCompra {
     ArrayList <ItemCarrito> carrito;
     double total;
 
+    // Para el servicio
+    private ServicioPrecio servicioPrecio;
+    private List<String> historial;
+
     public CarritoCompra() {
         this.carrito = new ArrayList<>();
+        this.historial = new ArrayList<>();
+    }
+
+    // Constructor con el servicio
+    public CarritoCompra(ServicioPrecio servicioPrecio) {
+        this.carrito = new ArrayList<>();
+        this.historial = new ArrayList<>();
+        this.servicioPrecio = servicioPrecio;  
     }
     
     public void addItem(ItemCarrito item) throws Exception{
@@ -80,6 +93,67 @@ public class CarritoCompra {
         if (aux.getCantidad() == 0){
             removeItem(aux);
         }
+    }
+
+    public void vaciarCarrito(){
+        this.carrito.clear();
+        this.total = 0;
+        historial.add("Vaciar carrito");
+    }
+
+    public double calcularTotal(){
+        if (servicioPrecio == null) {
+           throw new IllegalStateException( "ServicioPrecio no configurado"); 
+        }
+
+        double subtotal = 0;
+        for (ItemCarrito e: carrito) {
+            subtotal += e.getSubtotal();
+        }
+        double descuento = servicioPrecio.calcularDescuento(subtotal);
+        double baseConDescuento = subtotal - descuento;
+        double impuesto   = servicioPrecio.calcularImpuesto(baseConDescuento);
+
+        this.total = baseConDescuento + impuesto;
+
+        historial.add(String.format(
+            "CALCULAR_TOTAL: subtotal=%.2f descuento=%.2f impuesto=%.2f total=%.2f",
+            subtotal, descuento, impuesto, this.total));
+        
+        return this.total;
+    }
+
+    public String obtenerResumenCompra() {
+        if (servicioPrecio == null) {
+            throw new IllegalStateException(
+                "ServicioPrecio no configurado. Use el constructor con ServicioPrecio.");
+        }
+ 
+        double subtotal = 0;
+        StringBuilder sb = new StringBuilder();
+        sb.append("RESUMEN DE COMPRA\n");
+ 
+        for (ItemCarrito e : carrito) {
+            sb.append(String.format("  %-20s x%d  S/ %.2f%n",
+                e.getProducto().getNombre(),
+                e.getCantidad(),
+                e.getSubtotal()));
+            subtotal += e.getSubtotal();
+        }
+ 
+        double descuento        = servicioPrecio.calcularDescuento(subtotal);
+        double baseConDescuento = subtotal - descuento;
+        double impuesto         = servicioPrecio.calcularImpuesto(baseConDescuento);
+        double totalFinal       = baseConDescuento + impuesto;
+ 
+        sb.append(String.format("  Subtotal  : S/ %.2f%n", subtotal));
+        sb.append(String.format("  Descuento : S/ %.2f%n", descuento));
+        sb.append(String.format("  IGV (18%%) : S/ %.2f%n", impuesto));
+        sb.append(String.format("  TOTAL     : S/ %.2f%n", totalFinal));
+        sb.append("\n");
+ 
+        this.total = totalFinal;
+        return sb.toString();
     }
 
     public void resumenCompra(){
