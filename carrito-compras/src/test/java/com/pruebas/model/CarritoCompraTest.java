@@ -29,29 +29,67 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-01 Agregar un item nuevo al carrito")
-    void testAgregarNuevoItem() throws Exception {
+    @DisplayName("TC-01A Agregar item incrementa size")
+    void testAgregarNuevoItemSize() throws Exception {
 
-        ItemCarrito item = new ItemCarrito(listaProductos.get(0), 2);
+        carrito.addItem(
+            new ItemCarrito(listaProductos.get(0), 2)
+        );
 
-        carrito.addItem(item);
-
-        assertEquals(1, carrito.getCarrito().size());
-        assertEquals(item, carrito.getCarrito().get(0));
+        assertEquals(
+            1,
+            carrito.getCarrito().size()
+        );
     }
 
     @Test
-    @DisplayName("TC-02 Agregar producto duplicado")
-    void testAgregarProductoDuplicado() throws Exception {
+    @DisplayName("TC-01B Agregar item almacena item correcto")
+    void testAgregarNuevoItemContenido() throws Exception {
 
-        ItemCarrito item1 = new ItemCarrito(listaProductos.get(0), 1);
-        ItemCarrito item2 = new ItemCarrito(listaProductos.get(0), 1);
+        ItemCarrito item =
+            new ItemCarrito(listaProductos.get(0), 2);
 
-        carrito.addItem(item1);
+        carrito.addItem(item);
+
+        assertEquals(
+            item,
+            carrito.getCarrito().get(0)
+        );
+    }
+
+    @Test
+    @DisplayName("TC-02A Producto duplicado lanza exception")
+    void testAgregarProductoDuplicadoException() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
+
+        assertThrows(
+            Exception.class,
+            () -> carrito.addItem(
+                new ItemCarrito(producto, 1)
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("TC-02B Producto duplicado lanza mensaje correcto")
+    void testAgregarProductoDuplicadoMensaje() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
 
         Exception ex = assertThrows(
             Exception.class,
-            () -> carrito.addItem(item2)
+            () -> carrito.addItem(
+                new ItemCarrito(producto, 1)
+            )
         );
 
         assertEquals(
@@ -74,10 +112,24 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-04 Eliminar item inexistente")
-    void testEliminarItemInexistente() throws Exception {
+    @DisplayName("TC-04A Eliminar item inexistente lanza exception")
+    void testEliminarItemInexistenteException() throws Exception {
 
-        ItemCarrito item = new ItemCarrito(listaProductos.get(1), 1);
+        ItemCarrito item =
+            new ItemCarrito(listaProductos.get(1), 1);
+
+        assertThrows(
+            Exception.class,
+            () -> carrito.removeItem(item)
+        );
+    }
+
+    @Test
+    @DisplayName("TC-04B Eliminar item inexistente lanza mensaje correcto")
+    void testEliminarItemInexistenteMensaje() throws Exception {
+
+        ItemCarrito item =
+            new ItemCarrito(listaProductos.get(1), 1);
 
         Exception ex = assertThrows(
             Exception.class,
@@ -91,45 +143,99 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-05 Crear item con cantidad inválida")
-    void testCantidadInvalida() {
+    @DisplayName("TC-05A Cantidad 0 lanza exception")
+    void testCantidadCeroException() {
 
-        Exception ex1 = assertThrows(
+        assertThrows(
             Exception.class,
-            () -> new ItemCarrito(listaProductos.get(0), 0)
-        );
-
-        assertEquals(
-            "La cantidad debe ser mayor a 0",
-            ex1.getMessage()
-        );
-
-        Exception ex2 = assertThrows(
-            Exception.class,
-            () -> new ItemCarrito(listaProductos.get(0), -5)
-        );
-
-        assertEquals(
-            "La cantidad debe ser mayor a 0",
-            ex2.getMessage()
+            () -> new ItemCarrito(
+                listaProductos.get(0),
+                0
+            )
         );
     }
 
     @Test
-    @DisplayName("TC-06 Agregar unidad extra")
-    void testAgregarUnidadExtra() throws Exception {
+    @DisplayName("TC-05B Cantidad 0 lanza mensaje correcto")
+    void testCantidadCeroMensaje() {
+
+        Exception ex = assertThrows(
+            Exception.class,
+            () -> new ItemCarrito(
+                listaProductos.get(0),
+                0
+            )
+        );
+
+        assertEquals(
+            "La cantidad debe ser mayor a 0",
+            ex.getMessage()
+        );
+    }
+
+    @Test
+    @DisplayName("TC-05C Cantidad negativa lanza exception")
+    void testCantidadNegativaException() {
+
+        assertThrows(
+            Exception.class,
+            () -> new ItemCarrito(
+                listaProductos.get(0),
+                -5
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("TC-05D Cantidad negativa lanza mensaje correcto")
+    void testCantidadNegativaMensaje() {
+
+        Exception ex = assertThrows(
+            Exception.class,
+            () -> new ItemCarrito(
+                listaProductos.get(0),
+                -5
+            )
+        );
+
+        assertEquals(
+            "La cantidad debe ser mayor a 0",
+            ex.getMessage()
+        );
+    }
+
+    @Test
+    @DisplayName("TC-06A Agregar unidad incrementa cantidad")
+    void testAgregarUnidadExtraCantidad() throws Exception {
 
         Producto producto = listaProductos.get(0);
 
-        ItemCarrito item = new ItemCarrito(producto, 1);
-
-        carrito.addItem(item);
-
-        int stockInicial = producto.getDisponibilidad();
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
 
         carrito.addOneProduct(producto);
 
-        assertEquals(2, carrito.getCarrito().get(0).getCantidad());
+        assertEquals(
+            2,
+            carrito.getCarrito().get(0).getCantidad()
+        );
+    }
+
+    @Test
+    @DisplayName("TC-06B Agregar unidad reduce stock")
+    void testAgregarUnidadExtraStock() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
+
+        int stockInicial =
+            producto.getDisponibilidad();
+
+        carrito.addOneProduct(producto);
 
         assertEquals(
             stockInicial - 1,
@@ -138,12 +244,30 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-07 Agregar unidad sin stock")
-    void testAgregarUnidadSinStock() throws Exception {
+    @DisplayName("TC-07A Agregar unidad sin stock lanza exception")
+    void testAgregarUnidadSinStockException() throws Exception {
 
         Producto producto = listaProductos.get(3);
 
-        carrito.addItem(new ItemCarrito(producto, 1));
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
+
+        assertThrows(
+            Exception.class,
+            () -> carrito.addOneProduct(producto)
+        );
+    }
+
+    @Test
+    @DisplayName("TC-07B Agregar unidad sin stock lanza mensaje correcto")
+    void testAgregarUnidadSinStockMensaje() throws Exception {
+
+        Producto producto = listaProductos.get(3);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
 
         Exception ex = assertThrows(
             Exception.class,
@@ -157,20 +281,37 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-08 Quitar unidad reduce cantidad")
-    void testQuitarUnidad() throws Exception {
+    @DisplayName("TC-08A Quitar unidad reduce cantidad")
+    void testQuitarUnidadCantidad() throws Exception {
 
         Producto producto = listaProductos.get(0);
 
-        ItemCarrito item = new ItemCarrito(producto, 3);
-
-        carrito.addItem(item);
-
-        int stockInicial = producto.getDisponibilidad();
+        carrito.addItem(
+            new ItemCarrito(producto, 3)
+        );
 
         carrito.removeOneProduct(producto);
 
-        assertEquals(2, carrito.getCarrito().get(0).getCantidad());
+        assertEquals(
+            2,
+            carrito.getCarrito().get(0).getCantidad()
+        );
+    }
+
+    @Test
+    @DisplayName("TC-08B Quitar unidad aumenta stock")
+    void testQuitarUnidadStock() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 3)
+        );
+
+        int stockInicial =
+            producto.getDisponibilidad();
+
+        carrito.removeOneProduct(producto);
 
         assertEquals(
             stockInicial + 1,
@@ -204,8 +345,8 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-11A Historial registra ADD_ITEM")
-    void testHistorialAddItem() throws Exception {
+    @DisplayName("TC-11A Historial registra ADD_ITEM verificar size")
+    void testHistorialAddItemSize() throws Exception {
 
         Producto producto = listaProductos.get(0);
 
@@ -214,10 +355,32 @@ public class CarritoCompraTest {
         );
 
         assertEquals(1, carrito.getHistorial().size());
+    }
+
+    @Test
+    @DisplayName("TC-11B Historial registra ADD_ITEM verificar mensaje")
+    void testHistorialAddItemMensaje() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
 
         assertTrue(
             carrito.getHistorial().get(0)
                 .contains("ADD_ITEM")
+        );
+    }
+
+    @Test
+    @DisplayName("TC-11C Historial registra ADD_ITEM verificar producto")
+    void testHistorialAddItemProducto() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
         );
 
         assertTrue(
@@ -227,8 +390,8 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-11B Historial registra ADD_ONE_PRODUCT")
-    void testHistorialAddOneProduct() throws Exception {
+    @DisplayName("TC-12A Historial registra ADD_ONE_PRODUCT verificar size")
+    void testHistorialAddOneProductSize() throws Exception {
 
         Producto producto = listaProductos.get(0);
 
@@ -239,11 +402,37 @@ public class CarritoCompraTest {
         carrito.addOneProduct(producto);
 
         assertEquals(2, carrito.getHistorial().size());
+    }
+
+    @Test
+    @DisplayName("TC-12B Historial registra ADD_ONE_PRODUCT verificar mensaje")
+    void testHistorialAddOneProductMensaje() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
+
+        carrito.addOneProduct(producto);
 
         assertTrue(
             carrito.getHistorial().get(1)
                 .contains("ADD_ONE_PRODUCT")
         );
+    }
+
+    @Test
+    @DisplayName("TC-12C Historial registra ADD_ONE_PRODUCT verificar producto")
+    void testHistorialAddOneProductProducto() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
+
+        carrito.addOneProduct(producto);
 
         assertTrue(
             carrito.getHistorial().get(1)
@@ -252,8 +441,8 @@ public class CarritoCompraTest {
     }
     
     @Test
-    @DisplayName("TC-11C Historial registra REMOVE_ONE_PRODUCT")
-    void testHistorialRemoveOneProduct() throws Exception {
+    @DisplayName("TC-13A Historial registra REMOVE_ONE_PRODUCT verificar size")
+    void testHistorialRemoveOneProductSize() throws Exception {
 
         Producto producto = listaProductos.get(0);
 
@@ -264,11 +453,38 @@ public class CarritoCompraTest {
         carrito.removeOneProduct(producto);
 
         assertEquals(2, carrito.getHistorial().size());
+    }
+
+    @Test
+    @DisplayName("TC-13B Historial registra REMOVE_ONE_PRODUCT verificar mensaje")
+    void testHistorialRemoveOneProductMensaje() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 2)
+        );
+
+        carrito.removeOneProduct(producto);
 
         assertTrue(
             carrito.getHistorial().get(1)
                 .contains("REMOVE_ONE_PRODUCT")
         );
+    }
+
+
+    @Test
+    @DisplayName("TC-13C Historial registra REMOVE_ONE_PRODUCT verificar producto")
+    void testHistorialRemoveOneProductProducto() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 2)
+        );
+
+        carrito.removeOneProduct(producto);
 
         assertTrue(
             carrito.getHistorial().get(1)
@@ -277,8 +493,8 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-11D Historial registra REMOVE_ITEM")
-    void testHistorialRemoveItem() throws Exception {
+    @DisplayName("TC-14A Historial registra REMOVE_ITEM verificar size")
+    void testHistorialRemoveItemSize() throws Exception {
 
         Producto producto = listaProductos.get(0);
 
@@ -289,11 +505,37 @@ public class CarritoCompraTest {
         carrito.removeItem(item);
 
         assertEquals(2, carrito.getHistorial().size());
+    }
+
+    @Test
+    @DisplayName("TC-14B Historial registra REMOVE_ITEM verificar mensaje")
+    void testHistorialRemoveItemMensaje() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        ItemCarrito item = new ItemCarrito(producto, 1);
+
+        carrito.addItem(item);
+
+        carrito.removeItem(item);
 
         assertTrue(
             carrito.getHistorial().get(1)
                 .contains("REMOVE_ITEM")
         );
+    }
+
+    @Test
+    @DisplayName("TC-14C Historial registra REMOVE_ITEM verificar producto")
+    void testHistorialRemoveItemProducto() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        ItemCarrito item = new ItemCarrito(producto, 1);
+
+        carrito.addItem(item);
+
+        carrito.removeItem(item);
 
         assertTrue(
             carrito.getHistorial().get(1)
@@ -302,8 +544,8 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-11E Historial registra CLEAR_CART")
-    void testHistorialClearCart() throws Exception {
+    @DisplayName("TC-15A Historial registra CLEAR_CART verificar size")
+    void testHistorialClearCartSize() throws Exception {
 
         carrito.addItem(
             new ItemCarrito(listaProductos.get(0), 1)
@@ -320,8 +562,44 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-11F Historial registra ERROR_ADD_ITEM")
-    void testHistorialErrorAddItem() throws Exception {
+    @DisplayName("TC-15B Historial registra CLEAR_CART verificar mensaje")
+    void testHistorialClearCartMensaje() throws Exception {
+
+        carrito.addItem(
+            new ItemCarrito(listaProductos.get(0), 1)
+        );
+
+        carrito.vaciarCarrito();
+
+        assertEquals(2, carrito.getHistorial().size());
+
+        assertTrue(
+            carrito.getHistorial().get(1)
+                .contains("CLEAR_CART")
+        );
+    }
+
+    @Test
+    @DisplayName("TC-16A Historial registra ERROR_ADD_ITEM verificar Exception")
+    void testHistorialErrorAddItemException() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
+
+        assertThrows(
+            Exception.class,
+            () -> carrito.addItem(
+                new ItemCarrito(producto, 1)
+            )
+        );
+    }
+
+    @Test
+    @DisplayName("TC-16B Historial registra ERROR_ADD_ITEM verificar size")
+    void testHistorialErrorAddItemSize() throws Exception {
 
         Producto producto = listaProductos.get(0);
 
@@ -337,10 +615,46 @@ public class CarritoCompraTest {
         );
 
         assertEquals(2, carrito.getHistorial().size());
+    }
+
+    @Test
+    @DisplayName("TC-16C Historial registra ERROR_ADD_ITEM verificar mensaje")
+    void testHistorialErrorAddItemMensaje() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
+
+        assertThrows(
+            Exception.class,
+            () -> carrito.addItem(
+                new ItemCarrito(producto, 1)
+            )
+        );
 
         assertTrue(
             carrito.getHistorial().get(1)
                 .contains("ERROR_ADD_ITEM")
+        );
+    }
+
+    @Test
+    @DisplayName("TC-16D Historial registra ERROR_ADD_ITEM verificar producto")
+    void testHistorialErrorAddItemProducto() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        carrito.addItem(
+            new ItemCarrito(producto, 1)
+        );
+
+        assertThrows(
+            Exception.class,
+            () -> carrito.addItem(
+                new ItemCarrito(producto, 1)
+            )
         );
 
         assertTrue(
@@ -350,8 +664,22 @@ public class CarritoCompraTest {
     }
 
     @Test
-    @DisplayName("TC-11G Historial registra ERROR_REMOVE_ITEM")
-    void testHistorialErrorRemoveItem() throws Exception {
+    @DisplayName("TC-17A Historial registra ERROR_REMOVE_ITEM verificar Exception")
+    void testHistorialErrorRemoveItemException() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        ItemCarrito item = new ItemCarrito(producto, 1);
+
+        assertThrows(
+            Exception.class,
+            () -> carrito.removeItem(item)
+        );
+    }
+
+    @Test
+    @DisplayName("TC-17B Historial registra ERROR_REMOVE_ITEM verificar size")
+    void testHistorialErrorRemoveItemSize() throws Exception {
 
         Producto producto = listaProductos.get(0);
 
@@ -363,6 +691,20 @@ public class CarritoCompraTest {
         );
 
         assertEquals(1, carrito.getHistorial().size());
+    }
+
+    @Test
+    @DisplayName("TC-17C Historial registra ERROR_REMOVE_ITEM verificar mensaje")
+    void testHistorialErrorRemoveItemMensaje() throws Exception {
+
+        Producto producto = listaProductos.get(0);
+
+        ItemCarrito item = new ItemCarrito(producto, 1);
+
+        assertThrows(
+            Exception.class,
+            () -> carrito.removeItem(item)
+        );
 
         assertTrue(
             carrito.getHistorial().get(0)
