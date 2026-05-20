@@ -13,5 +13,8 @@ public class CarritoCompraTest {
     void setUp(){
         listaProductos = new ArrayList<>();
         listaProductos.add(new Producto("Escritorio", 249.9, 50));
+        listaProductos.add(new Producto("Silla de Oficina", 99.9, 150));
+        listaProductos.add(new Producto("Silla de escritorio", 99.9, 100));
+        listaProductos.add(new Producto("Silla gamer", 369.9, 20));
     }
 }
