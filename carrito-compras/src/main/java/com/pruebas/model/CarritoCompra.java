@@ -1,14 +1,17 @@
 package com.pruebas.model;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.pruebas.service.ServicioPrecio;
 
 public class CarritoCompra {
-    ArrayList <ItemCarrito> carrito;
-    double total;
 
-    // Para el servicio
+    private ArrayList<ItemCarrito> carrito;
+    private double total;
+
     private ServicioPrecio servicioPrecio;
     private List<String> historial;
 
@@ -17,53 +20,103 @@ public class CarritoCompra {
         this.historial = new ArrayList<>();
     }
 
-    // Constructor con el servicio
     public CarritoCompra(ServicioPrecio servicioPrecio) {
         this.carrito = new ArrayList<>();
         this.historial = new ArrayList<>();
-        this.servicioPrecio = servicioPrecio;  
+        this.servicioPrecio = servicioPrecio;
     }
 
     public List<ItemCarrito> getCarrito() {
-        return carrito;
+        return Collections.unmodifiableList(carrito);
     }
-    
-    public void addItem(ItemCarrito item) throws Exception{
-        for (ItemCarrito e : carrito){
-            if (e.getProducto().getId().equals(item.getProducto().getId())){
+
+    public List<String> getHistorial() {
+        return Collections.unmodifiableList(historial);
+    }
+
+    private void registrarOperacion(String operacion) {
+        historial.add(
+            "[" + LocalDateTime.now() + "] " + operacion
+        );
+    }
+
+    public void addItem(ItemCarrito item) throws Exception {
+
+        for (ItemCarrito e : carrito) {
+
+            if (e.getProducto().getId().equals(item.getProducto().getId())) {
+
+                registrarOperacion(
+                    "ERROR_ADD_ITEM -> Producto duplicado: "
+                    + item.getProducto().getNombre()
+                );
+
                 throw new Exception("El producto ya existe en el carrito");
             }
         }
 
-        this.carrito.add(item);
+        carrito.add(item);
+
+        registrarOperacion(
+            String.format(
+                "ADD_ITEM -> %s | cantidad=%d | subtotal=%.2f",
+                item.getProducto().getNombre(),
+                item.getCantidad(),
+                item.getSubtotal()
+            )
+        );
     }
 
-    public void removeItem(ItemCarrito item) throws Exception{
+    public void removeItem(ItemCarrito item) throws Exception {
+
         int index = carrito.indexOf(item);
 
-        if (index == -1){
-            throw new Exception ("El producto seleccionado no existe");
+        if (index == -1) {
+
+            registrarOperacion(
+                "ERROR_REMOVE_ITEM -> Producto inexistente"
+            );
+
+            throw new Exception("El producto seleccionado no existe");
         }
 
-        this.carrito.remove(index);
+        carrito.remove(index);
+
+        registrarOperacion(
+            "REMOVE_ITEM -> " + item.getProducto().getNombre()
+        );
     }
 
     public void addOneProduct(Producto producto) throws Exception {
+
         int index = 0;
 
-        for (ItemCarrito e : this.carrito){
-            if (e.getProducto().getId().equals(producto.getId())){
+        for (ItemCarrito e : carrito) {
+
+            if (e.getProducto().getId().equals(producto.getId())) {
                 break;
             }
+
             index++;
         }
 
-        if (index >= carrito.size()){
-            throw new Exception ("El producto seleccionado no existe");
+        if (index >= carrito.size()) {
+
+            registrarOperacion(
+                "ERROR_ADD_ONE_PRODUCT -> Producto inexistente"
+            );
+
+            throw new Exception("El producto seleccionado no existe");
         }
 
-        if (!producto.isDisponible()){
-            throw new Exception ("No hay stock disponible");
+        if (!producto.isDisponible()) {
+
+            registrarOperacion(
+                "ERROR_ADD_ONE_PRODUCT -> Sin stock: "
+                + producto.getNombre()
+            );
+
+            throw new Exception("No hay stock disponible");
         }
 
         ItemCarrito aux = carrito.get(index);
@@ -72,20 +125,34 @@ public class CarritoCompra {
         producto.removeOneProduct();
 
         carrito.set(index, aux);
+
+        registrarOperacion(
+            "ADD_ONE_PRODUCT -> "
+            + producto.getNombre()
+            + " | nuevaCantidad=" + aux.getCantidad()
+        );
     }
 
     public void removeOneProduct(Producto producto) throws Exception {
+
         int index = 0;
 
-        for (ItemCarrito e : this.carrito){
-            if (e.getProducto().getId().equals(producto.getId())){
+        for (ItemCarrito e : carrito) {
+
+            if (e.getProducto().getId().equals(producto.getId())) {
                 break;
             }
+
             index++;
         }
 
-        if (index >= carrito.size()){
-            throw new Exception ("El producto seleccionado no existe");
+        if (index >= carrito.size()) {
+
+            registrarOperacion(
+                "ERROR_REMOVE_ONE_PRODUCT -> Producto inexistente"
+            );
+
+            throw new Exception("El producto seleccionado no existe");
         }
 
         ItemCarrito aux = carrito.get(index);
@@ -94,85 +161,168 @@ public class CarritoCompra {
         producto.addOneProduct();
 
         carrito.set(index, aux);
-        
-        if (aux.getCantidad() == 0){
+
+        registrarOperacion(
+            "REMOVE_ONE_PRODUCT -> "
+            + producto.getNombre()
+            + " | nuevaCantidad=" + aux.getCantidad()
+        );
+
+        if (aux.getCantidad() == 0) {
             removeItem(aux);
         }
     }
 
-    public void vaciarCarrito(){
-        this.carrito.clear();
-        this.total = 0;
-        historial.add("Vaciar carrito");
+    public void vaciarCarrito() {
+
+        int cantidadItems = carrito.size();
+
+        carrito.clear();
+        total = 0;
+
+        registrarOperacion(
+            "CLEAR_CART -> itemsEliminados=" + cantidadItems
+        );
     }
 
-    public double calcularTotal(){
+    public double calcularTotal() {
+
         if (servicioPrecio == null) {
-           throw new IllegalStateException( "ServicioPrecio no configurado"); 
+
+            registrarOperacion(
+                "ERROR_CALCULAR_TOTAL -> ServicioPrecio no configurado"
+            );
+
+            throw new IllegalStateException(
+                "ServicioPrecio no configurado"
+            );
         }
 
         double subtotal = 0;
-        for (ItemCarrito e: carrito) {
+
+        for (ItemCarrito e : carrito) {
             subtotal += e.getSubtotal();
         }
+
         double descuento = servicioPrecio.calcularDescuento(subtotal);
         double baseConDescuento = subtotal - descuento;
-        double impuesto   = servicioPrecio.calcularImpuesto(baseConDescuento);
+        double impuesto = servicioPrecio.calcularImpuesto(baseConDescuento);
 
-        this.total = baseConDescuento + impuesto;
+        total = baseConDescuento + impuesto;
 
-        historial.add(String.format(
-            "CALCULAR_TOTAL: subtotal=%.2f descuento=%.2f impuesto=%.2f total=%.2f",
-            subtotal, descuento, impuesto, this.total));
-        
-        return this.total;
+        registrarOperacion(
+            String.format(
+                "CALCULAR_TOTAL -> subtotal=%.2f descuento=%.2f impuesto=%.2f total=%.2f",
+                subtotal,
+                descuento,
+                impuesto,
+                total
+            )
+        );
+
+        return total;
     }
 
     public String obtenerResumenCompra() {
+
         if (servicioPrecio == null) {
+
+            registrarOperacion(
+                "ERROR_RESUMEN_COMPRA -> ServicioPrecio no configurado"
+            );
+
             throw new IllegalStateException(
-                "ServicioPrecio no configurado. Use el constructor con ServicioPrecio.");
+                "ServicioPrecio no configurado. Use el constructor con ServicioPrecio."
+            );
         }
- 
+
         double subtotal = 0;
+
         StringBuilder sb = new StringBuilder();
+
         sb.append("RESUMEN DE COMPRA\n");
- 
+
         for (ItemCarrito e : carrito) {
-            sb.append(String.format("  %-20s x%d  S/ %.2f%n",
-                e.getProducto().getNombre(),
-                e.getCantidad(),
-                e.getSubtotal()));
+
+            sb.append(
+                String.format(
+                    "  %-20s x%d  S/ %.2f%n",
+                    e.getProducto().getNombre(),
+                    e.getCantidad(),
+                    e.getSubtotal()
+                )
+            );
+
             subtotal += e.getSubtotal();
         }
- 
-        double descuento        = servicioPrecio.calcularDescuento(subtotal);
+
+        double descuento = servicioPrecio.calcularDescuento(subtotal);
         double baseConDescuento = subtotal - descuento;
-        double impuesto         = servicioPrecio.calcularImpuesto(baseConDescuento);
-        double totalFinal       = baseConDescuento + impuesto;
- 
-        sb.append(String.format("  Subtotal  : S/ %.2f%n", subtotal));
-        sb.append(String.format("  Descuento : S/ %.2f%n", descuento));
-        sb.append(String.format("  IGV (18%%) : S/ %.2f%n", impuesto));
-        sb.append(String.format("  TOTAL     : S/ %.2f%n", totalFinal));
+        double impuesto = servicioPrecio.calcularImpuesto(baseConDescuento);
+        double totalFinal = baseConDescuento + impuesto;
+
+        sb.append(
+            String.format(
+                "  Subtotal  : S/ %.2f%n",
+                subtotal
+            )
+        );
+
+        sb.append(
+            String.format(
+                "  Descuento : S/ %.2f%n",
+                descuento
+            )
+        );
+
+        sb.append(
+            String.format(
+                "  IGV (18%%) : S/ %.2f%n",
+                impuesto
+            )
+        );
+
+        sb.append(
+            String.format(
+                "  TOTAL     : S/ %.2f%n",
+                totalFinal
+            )
+        );
+
         sb.append("\n");
- 
-        this.total = totalFinal;
+
+        total = totalFinal;
+
+        registrarOperacion(
+            String.format(
+                "GENERAR_RESUMEN -> total=%.2f",
+                totalFinal
+            )
+        );
+
         return sb.toString();
     }
 
-    public List<String> getHistorial() {
-        return historial;
-    }
+    public void resumenCompra() {
 
-    public void resumenCompra(){
-        this.total = 0;
+        total = 0;
 
-        for (ItemCarrito e : carrito){
+        for (ItemCarrito e : carrito) {
+
             e.printItem();
-            this.total += e.getSubtotal();
+
+            total += e.getSubtotal();
         }
 
-        System.out.println("______________________\nTotal: " + this.total);
+        System.out.println(
+            "______________________\nTotal: " + total
+        );
+
+        registrarOperacion(
+            String.format(
+                "RESUMEN_COMPRA -> total=%.2f",
+                total
+            )
+        );
     }
 }
