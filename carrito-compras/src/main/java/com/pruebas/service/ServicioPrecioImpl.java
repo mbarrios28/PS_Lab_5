@@ -1,4 +1,4 @@
-package com.pruebas;
+package com.pruebas.service;
 
 public class ServicioPrecioImpl implements ServicioPrecio {
 

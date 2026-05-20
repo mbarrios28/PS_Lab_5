@@ -1,4 +1,4 @@
-package com.pruebas;
+package com.pruebas.service;
 
 public interface ServicioPrecio {
   double calcularDescuento(double subtotal);
