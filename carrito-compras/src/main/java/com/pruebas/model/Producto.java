@@ -1,0 +1,47 @@
+package com.pruebas.model;
+
+public class Producto {
+    String id;
+    String nombre;
+    double precio;
+    int disponibilidad;
+
+    public Producto(String id, String nombre, double precio, int disponibilidad) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.disponibilidad = disponibilidad;
+    }
+
+    public String getId() {
+        return this.id;
+    }
+
+    public String getNombre() {
+        return this.nombre;
+    }
+
+    public double getPrecio() {
+        return this.precio;
+    }
+
+    public int getDisponibilidad() {
+        return this.disponibilidad;
+    }
+
+    public boolean isDisponible() {
+        return this.disponibilidad > 0;
+    }
+
+    public void removeOneProduct() throws Exception{
+        if (this.disponibilidad == 0){
+            throw new Exception("No hay stock disponible");
+        }
+
+        this.disponibilidad--;
+    }
+
+    public void addOneProduct() {
+        this.disponibilidad++;
+    }
+}
