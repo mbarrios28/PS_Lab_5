@@ -22,6 +22,10 @@ public class CarritoCompra {
         this.historial = new ArrayList<>();
         this.servicioPrecio = servicioPrecio;  
     }
+
+    public List<ItemCarrito> getCarrito() {
+        return carrito;
+    }
     
     public void addItem(ItemCarrito item) throws Exception{
         for (ItemCarrito e : carrito){
