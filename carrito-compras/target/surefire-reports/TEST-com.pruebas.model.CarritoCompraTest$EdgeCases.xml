@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.pruebas.model.CarritoCompraTest" time="0.839" tests="0" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.1" name="com.pruebas.model.CarritoCompraTest$EdgeCases" time="0.66" tests="43" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="25"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -60,4 +60,53 @@
     <property name="socksNonProxyHosts" value="local|*.local|169.254/16|*.169.254/16"/>
     <property name="java.class.version" value="69.0"/>
   </properties>
+  <testcase name="testAgregarNuevoItemContenido" classname="com.pruebas.model.CarritoCompraTest" time="0.035"/>
+  <testcase name="testHistorialRemoveItemProducto" classname="com.pruebas.model.CarritoCompraTest" time="0.002"/>
+  <testcase name="testHistorialRemoveItemMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testAgregarUnidadSinStockMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.002"/>
+  <testcase name="testHistorialErrorAddItemMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialErrorRemoveItemMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testQuitarUnidadStock" classname="com.pruebas.model.CarritoCompraTest" time="0.002"/>
+  <testcase name="testHistorialClearCartMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialRemoveItemSize" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testQuitarUnidadCantidad" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testEliminarItemExistente" classname="com.pruebas.model.CarritoCompraTest" time="0.0"/>
+  <testcase name="testHistorialErrorAddItemProducto" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialAddOneProductMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testAgregarUnidadSinStockException" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testAgregarProductoDuplicadoException" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialRemoveOneProductMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.0"/>
+  <testcase name="testCantidadCeroMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.0"/>
+  <testcase name="testQuitarUltimaUnidad" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testAgregarNuevoItemSize" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testVaciarCarrito" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialAddOneProductSize" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialAddOneProductProducto" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testCantidadCeroException" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialClearCartSize" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testEliminarItemInexistenteException" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialAddItemMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialErrorAddItemException" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testCantidadNegativaException" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testCantidadNegativaMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialRemoveOneProductProducto" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialErrorAddItemSize" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialErrorRemoveItemSize" classname="com.pruebas.model.CarritoCompraTest" time="0.0"/>
+  <testcase name="testAgregarProductoDuplicadoMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialRemoveOneProductSize" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialErrorRemoveItemException" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testAgregarUnidadExtraStock" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialAddItemProducto" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testHistorialAddItemSize" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testEliminarItemInexistenteMensaje" classname="com.pruebas.model.CarritoCompraTest" time="0.001"/>
+  <testcase name="testAgregarUnidadExtraCantidad" classname="com.pruebas.model.CarritoCompraTest" time="0.0"/>
+  <testcase name="testSubtotalNegativo" classname="com.pruebas.model.CarritoCompraTest$EdgeCases" time="0.002"/>
+  <testcase name="testCarrito100Productos" classname="com.pruebas.model.CarritoCompraTest$EdgeCases" time="0.653">
+    <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (/Users/sdhm/.m2/repository/net/bytebuddy/byte-buddy-agent/1.14.15/byte-buddy-agent-1.14.15.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
+  </testcase>
+  <testcase name="testCarritoUnProducto" classname="com.pruebas.model.CarritoCompraTest$EdgeCases" time="0.001"/>
 </testsuite>

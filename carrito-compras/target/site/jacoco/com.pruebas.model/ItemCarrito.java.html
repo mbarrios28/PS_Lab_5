@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ItemCarrito.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">carrito-compras</a> &gt; <a href="index.source.html" class="el_package">com.pruebas.model</a> &gt; <span class="el_source">ItemCarrito.java</span></div><h1>ItemCarrito.java</h1><pre class="source lang-java linenums">package com.pruebas.model;
+
+public class ItemCarrito {
+    Producto producto;
+    int cantidad;
+    double subtotal;
+
+<span class="fc" id="L8">    public ItemCarrito(Producto producto, int cantidad) throws Exception {</span>
+<span class="fc bfc" id="L9" title="All 2 branches covered.">        if (cantidad &lt;= 0){</span>
+<span class="fc" id="L10">            throw new Exception(&quot;La cantidad debe ser mayor a 0&quot;);</span>
+        }
+
+<span class="fc" id="L13">        this.producto = producto;</span>
+<span class="fc" id="L14">        this.cantidad = cantidad;</span>
+<span class="fc" id="L15">        this.subtotal = calculateSubtotal();</span>
+<span class="fc" id="L16">    }</span>
+
+    public Producto getProducto() {
+<span class="fc" id="L19">        return this.producto;</span>
+    }
+
+    public int getCantidad() {
+<span class="fc" id="L23">        return this.cantidad;</span>
+    }
+
+    public double getSubtotal(){
+<span class="fc" id="L27">        return this.subtotal;</span>
+    }
+
+    public void addOneProduct(){
+<span class="fc" id="L31">        this.cantidad++;</span>
+<span class="fc" id="L32">        this.subtotal = calculateSubtotal();</span>
+<span class="fc" id="L33">    }</span>
+
+    public void removeOneProduct() throws Exception{
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (this.cantidad == 0){</span>
+<span class="nc" id="L37">            throw new Exception(&quot;No hay productos para eliminar&quot;);</span>
+        }
+
+<span class="fc" id="L40">        this.cantidad--;</span>
+<span class="fc" id="L41">        this.subtotal = calculateSubtotal();</span>
+<span class="fc" id="L42">    }</span>
+
+    private double calculateSubtotal(){
+<span class="fc" id="L45">        return this.producto.getPrecio() * this.cantidad;</span>
+    }
+
+    public void printItem(){
+<span class="nc" id="L49">        System.out.println(</span>
+<span class="nc" id="L50">            &quot;Producto: &quot; + producto.getNombre() +</span>
+            &quot; | Cantidad: &quot; + cantidad +
+            &quot; | Subtotal: &quot; + subtotal
+        );
+<span class="nc" id="L54">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

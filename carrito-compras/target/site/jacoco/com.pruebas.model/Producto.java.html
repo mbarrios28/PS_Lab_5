@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Producto.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">carrito-compras</a> &gt; <a href="index.source.html" class="el_package">com.pruebas.model</a> &gt; <span class="el_source">Producto.java</span></div><h1>Producto.java</h1><pre class="source lang-java linenums">package com.pruebas.model;
+
+public class Producto {
+<span class="fc" id="L4">    private static int contador = 1;</span>
+
+    String id;
+    String nombre;
+    double precio;
+    int disponibilidad;
+
+<span class="fc" id="L11">    public Producto(String nombre, double precio, int disponibilidad) throws Exception {</span>
+<span class="pc bpc" id="L12" title="1 of 2 branches missed.">        if (verifyProducto(precio, disponibilidad)){</span>
+<span class="fc" id="L13">            this.id = generateId();</span>
+<span class="fc" id="L14">            this.nombre = nombre;</span>
+<span class="fc" id="L15">            this.precio = precio;</span>
+<span class="fc" id="L16">            this.disponibilidad = disponibilidad;</span>
+        }
+<span class="fc" id="L18">    }</span>
+
+    private String generateId(){
+<span class="fc" id="L21">        return &quot;PROD-&quot; + contador++;</span>
+    }
+
+    public String getId() {
+<span class="fc" id="L25">        return this.id;</span>
+    }
+
+    public String getNombre() {
+<span class="fc" id="L29">        return this.nombre;</span>
+    }
+
+    public double getPrecio() {
+<span class="fc" id="L33">        return this.precio;</span>
+    }
+
+    public int getDisponibilidad() {
+<span class="fc" id="L37">        return this.disponibilidad;</span>
+    }
+
+    public boolean isDisponible() {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        return this.disponibilidad &gt; 0;</span>
+    }
+
+    public void removeOneProduct() throws Exception{
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if (this.disponibilidad == 0){</span>
+<span class="nc" id="L46">            throw new Exception(&quot;No hay stock disponible&quot;);</span>
+        }
+
+<span class="fc" id="L49">        this.disponibilidad--;</span>
+<span class="fc" id="L50">    }</span>
+
+    public void addOneProduct() {
+<span class="fc" id="L53">        this.disponibilidad++;</span>
+<span class="fc" id="L54">    }</span>
+
+    private boolean verifyProducto(double precio, int cantidad) throws Exception{
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">        if (precio &lt; 0){</span>
+<span class="nc" id="L58">            throw new Exception (&quot;El producto no puede tener precio negativo&quot;);</span>
+        }
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">        if (cantidad &lt; 0){</span>
+<span class="nc" id="L61">            throw new Exception (&quot;El producto no puede tener cantidad negativa&quot;);</span>
+        }
+<span class="fc" id="L63">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

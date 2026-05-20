@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CarritoCompra.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">carrito-compras</a> &gt; <a href="index.source.html" class="el_package">com.pruebas.model</a> &gt; <span class="el_source">CarritoCompra.java</span></div><h1>CarritoCompra.java</h1><pre class="source lang-java linenums">package com.pruebas.model;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import com.pruebas.service.ServicioPrecio;
+
+public class CarritoCompra {
+
+    private ArrayList&lt;ItemCarrito&gt; carrito;
+    private double total;
+
+    private ServicioPrecio servicioPrecio;
+    private List&lt;String&gt; historial;
+
+<span class="fc" id="L18">    public CarritoCompra() {</span>
+<span class="fc" id="L19">        this.carrito = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L20">        this.historial = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L21">    }</span>
+
+<span class="fc" id="L23">    public CarritoCompra(ServicioPrecio servicioPrecio) {</span>
+<span class="fc" id="L24">        this.carrito = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L25">        this.historial = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L26">        this.servicioPrecio = servicioPrecio;</span>
+<span class="fc" id="L27">    }</span>
+
+    public List&lt;ItemCarrito&gt; getCarrito() {
+<span class="fc" id="L30">        return Collections.unmodifiableList(carrito);</span>
+    }
+
+    public List&lt;String&gt; getHistorial() {
+<span class="fc" id="L34">        return Collections.unmodifiableList(historial);</span>
+    }
+
+    private void registrarOperacion(String operacion) {
+<span class="fc" id="L38">        historial.add(</span>
+<span class="fc" id="L39">            &quot;[&quot; + LocalDateTime.now() + &quot;] &quot; + operacion</span>
+        );
+<span class="fc" id="L41">    }</span>
+
+    public void addItem(ItemCarrito item) throws Exception {
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        for (ItemCarrito e : carrito) {</span>
+
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            if (e.getProducto().getId().equals(item.getProducto().getId())) {</span>
+
+<span class="fc" id="L49">                registrarOperacion(</span>
+                    &quot;ERROR_ADD_ITEM -&gt; Producto duplicado: &quot;
+<span class="fc" id="L51">                    + item.getProducto().getNombre()</span>
+                );
+
+<span class="fc" id="L54">                throw new Exception(&quot;El producto ya existe en el carrito&quot;);</span>
+            }
+<span class="fc" id="L56">        }</span>
+
+<span class="fc" id="L58">        carrito.add(item);</span>
+
+<span class="fc" id="L60">        registrarOperacion(</span>
+<span class="fc" id="L61">            String.format(</span>
+                &quot;ADD_ITEM -&gt; %s | cantidad=%d | subtotal=%.2f&quot;,
+<span class="fc" id="L63">                item.getProducto().getNombre(),</span>
+<span class="fc" id="L64">                item.getCantidad(),</span>
+<span class="fc" id="L65">                item.getSubtotal()</span>
+            )
+        );
+<span class="fc" id="L68">    }</span>
+
+    public void removeItem(ItemCarrito item) throws Exception {
+
+<span class="fc" id="L72">        int index = carrito.indexOf(item);</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (index == -1) {</span>
+
+<span class="fc" id="L76">            registrarOperacion(</span>
+                &quot;ERROR_REMOVE_ITEM -&gt; Producto inexistente&quot;
+            );
+
+<span class="fc" id="L80">            throw new Exception(&quot;El producto seleccionado no existe&quot;);</span>
+        }
+
+<span class="fc" id="L83">        carrito.remove(index);</span>
+
+<span class="fc" id="L85">        registrarOperacion(</span>
+<span class="fc" id="L86">            &quot;REMOVE_ITEM -&gt; &quot; + item.getProducto().getNombre()</span>
+        );
+<span class="fc" id="L88">    }</span>
+
+    public void addOneProduct(Producto producto) throws Exception {
+
+<span class="fc" id="L92">        int index = 0;</span>
+
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">        for (ItemCarrito e : carrito) {</span>
+
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">            if (e.getProducto().getId().equals(producto.getId())) {</span>
+<span class="fc" id="L97">                break;</span>
+            }
+
+<span class="nc" id="L100">            index++;</span>
+<span class="nc" id="L101">        }</span>
+
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (index &gt;= carrito.size()) {</span>
+
+<span class="nc" id="L105">            registrarOperacion(</span>
+                &quot;ERROR_ADD_ONE_PRODUCT -&gt; Producto inexistente&quot;
+            );
+
+<span class="nc" id="L109">            throw new Exception(&quot;El producto seleccionado no existe&quot;);</span>
+        }
+
+<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (!producto.isDisponible()) {</span>
+
+<span class="fc" id="L114">            registrarOperacion(</span>
+                &quot;ERROR_ADD_ONE_PRODUCT -&gt; Sin stock: &quot;
+<span class="fc" id="L116">                + producto.getNombre()</span>
+            );
+
+<span class="fc" id="L119">            throw new Exception(&quot;No hay stock disponible&quot;);</span>
+        }
+
+<span class="fc" id="L122">        ItemCarrito aux = carrito.get(index);</span>
+
+<span class="fc" id="L124">        aux.addOneProduct();</span>
+<span class="fc" id="L125">        producto.removeOneProduct();</span>
+
+<span class="fc" id="L127">        carrito.set(index, aux);</span>
+
+<span class="fc" id="L129">        registrarOperacion(</span>
+            &quot;ADD_ONE_PRODUCT -&gt; &quot;
+<span class="fc" id="L131">            + producto.getNombre()</span>
+<span class="fc" id="L132">            + &quot; | nuevaCantidad=&quot; + aux.getCantidad()</span>
+        );
+<span class="fc" id="L134">    }</span>
+
+    public void removeOneProduct(Producto producto) throws Exception {
+
+<span class="fc" id="L138">        int index = 0;</span>
+
+<span class="pc bpc" id="L140" title="1 of 2 branches missed.">        for (ItemCarrito e : carrito) {</span>
+
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">            if (e.getProducto().getId().equals(producto.getId())) {</span>
+<span class="fc" id="L143">                break;</span>
+            }
+
+<span class="nc" id="L146">            index++;</span>
+<span class="nc" id="L147">        }</span>
+
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        if (index &gt;= carrito.size()) {</span>
+
+<span class="nc" id="L151">            registrarOperacion(</span>
+                &quot;ERROR_REMOVE_ONE_PRODUCT -&gt; Producto inexistente&quot;
+            );
+
+<span class="nc" id="L155">            throw new Exception(&quot;El producto seleccionado no existe&quot;);</span>
+        }
+
+<span class="fc" id="L158">        ItemCarrito aux = carrito.get(index);</span>
+
+<span class="fc" id="L160">        aux.removeOneProduct();</span>
+<span class="fc" id="L161">        producto.addOneProduct();</span>
+
+<span class="fc" id="L163">        carrito.set(index, aux);</span>
+
+<span class="fc" id="L165">        registrarOperacion(</span>
+            &quot;REMOVE_ONE_PRODUCT -&gt; &quot;
+<span class="fc" id="L167">            + producto.getNombre()</span>
+<span class="fc" id="L168">            + &quot; | nuevaCantidad=&quot; + aux.getCantidad()</span>
+        );
+
+<span class="fc bfc" id="L171" title="All 2 branches covered.">        if (aux.getCantidad() == 0) {</span>
+<span class="fc" id="L172">            removeItem(aux);</span>
+        }
+<span class="fc" id="L174">    }</span>
+
+    public void vaciarCarrito() {
+
+<span class="fc" id="L178">        int cantidadItems = carrito.size();</span>
+
+<span class="fc" id="L180">        carrito.clear();</span>
+<span class="fc" id="L181">        total = 0;</span>
+
+<span class="fc" id="L183">        registrarOperacion(</span>
+            &quot;CLEAR_CART -&gt; itemsEliminados=&quot; + cantidadItems
+        );
+<span class="fc" id="L186">    }</span>
+
+    public double calcularTotal() {
+
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (servicioPrecio == null) {</span>
+
+<span class="fc" id="L192">            registrarOperacion(</span>
+                &quot;ERROR_CALCULAR_TOTAL -&gt; ServicioPrecio no configurado&quot;
+            );
+
+<span class="fc" id="L196">            throw new IllegalStateException(</span>
+                &quot;ServicioPrecio no configurado&quot;
+            );
+        }
+
+<span class="fc" id="L201">        double subtotal = 0;</span>
+
+<span class="fc bfc" id="L203" title="All 2 branches covered.">        for (ItemCarrito e : carrito) {</span>
+<span class="fc" id="L204">            subtotal += e.getSubtotal();</span>
+<span class="fc" id="L205">        }</span>
+
+<span class="fc" id="L207">        double descuento = servicioPrecio.calcularDescuento(subtotal);</span>
+<span class="fc" id="L208">        double baseConDescuento = subtotal - descuento;</span>
+<span class="fc" id="L209">        double impuesto = servicioPrecio.calcularImpuesto(baseConDescuento);</span>
+
+<span class="fc" id="L211">        total = baseConDescuento + impuesto;</span>
+
+<span class="fc" id="L213">        registrarOperacion(</span>
+<span class="fc" id="L214">            String.format(</span>
+                &quot;CALCULAR_TOTAL -&gt; subtotal=%.2f descuento=%.2f impuesto=%.2f total=%.2f&quot;,
+<span class="fc" id="L216">                subtotal,</span>
+<span class="fc" id="L217">                descuento,</span>
+<span class="fc" id="L218">                impuesto,</span>
+<span class="fc" id="L219">                total</span>
+            )
+        );
+
+<span class="fc" id="L223">        return total;</span>
+    }
+
+    public String obtenerResumenCompra() {
+
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">        if (servicioPrecio == null) {</span>
+
+<span class="nc" id="L230">            registrarOperacion(</span>
+                &quot;ERROR_RESUMEN_COMPRA -&gt; ServicioPrecio no configurado&quot;
+            );
+
+<span class="nc" id="L234">            throw new IllegalStateException(</span>
+                &quot;ServicioPrecio no configurado. Use el constructor con ServicioPrecio.&quot;
+            );
+        }
+
+<span class="fc" id="L239">        double subtotal = 0;</span>
+
+<span class="fc" id="L241">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="fc" id="L243">        sb.append(&quot;RESUMEN DE COMPRA\n&quot;);</span>
+
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        for (ItemCarrito e : carrito) {</span>
+
+<span class="fc" id="L247">            sb.append(</span>
+<span class="fc" id="L248">                String.format(</span>
+                    &quot;  %-20s x%d  S/ %.2f%n&quot;,
+<span class="fc" id="L250">                    e.getProducto().getNombre(),</span>
+<span class="fc" id="L251">                    e.getCantidad(),</span>
+<span class="fc" id="L252">                    e.getSubtotal()</span>
+                )
+            );
+
+<span class="fc" id="L256">            subtotal += e.getSubtotal();</span>
+<span class="fc" id="L257">        }</span>
+
+<span class="fc" id="L259">        double descuento = servicioPrecio.calcularDescuento(subtotal);</span>
+<span class="fc" id="L260">        double baseConDescuento = subtotal - descuento;</span>
+<span class="fc" id="L261">        double impuesto = servicioPrecio.calcularImpuesto(baseConDescuento);</span>
+<span class="fc" id="L262">        double totalFinal = baseConDescuento + impuesto;</span>
+
+<span class="fc" id="L264">        sb.append(</span>
+<span class="fc" id="L265">            String.format(</span>
+                &quot;  Subtotal  : S/ %.2f%n&quot;,
+<span class="fc" id="L267">                subtotal</span>
+            )
+        );
+
+<span class="fc" id="L271">        sb.append(</span>
+<span class="fc" id="L272">            String.format(</span>
+                &quot;  Descuento : S/ %.2f%n&quot;,
+<span class="fc" id="L274">                descuento</span>
+            )
+        );
+
+<span class="fc" id="L278">        sb.append(</span>
+<span class="fc" id="L279">            String.format(</span>
+                &quot;  IGV (18%%) : S/ %.2f%n&quot;,
+<span class="fc" id="L281">                impuesto</span>
+            )
+        );
+
+<span class="fc" id="L285">        sb.append(</span>
+<span class="fc" id="L286">            String.format(</span>
+                &quot;  TOTAL     : S/ %.2f%n&quot;,
+<span class="fc" id="L288">                totalFinal</span>
+            )
+        );
+
+<span class="fc" id="L292">        sb.append(&quot;\n&quot;);</span>
+
+<span class="fc" id="L294">        total = totalFinal;</span>
+
+<span class="fc" id="L296">        registrarOperacion(</span>
+<span class="fc" id="L297">            String.format(</span>
+                &quot;GENERAR_RESUMEN -&gt; total=%.2f&quot;,
+<span class="fc" id="L299">                totalFinal</span>
+            )
+        );
+
+<span class="fc" id="L303">        return sb.toString();</span>
+    }
+
+    public void resumenCompra() {
+
+<span class="nc" id="L308">        total = 0;</span>
+
+<span class="nc bnc" id="L310" title="All 2 branches missed.">        for (ItemCarrito e : carrito) {</span>
+
+<span class="nc" id="L312">            e.printItem();</span>
+
+<span class="nc" id="L314">            total += e.getSubtotal();</span>
+<span class="nc" id="L315">        }</span>
+
+<span class="nc" id="L317">        System.out.println(</span>
+            &quot;______________________\nTotal: &quot; + total
+        );
+
+<span class="nc" id="L321">        registrarOperacion(</span>
+<span class="nc" id="L322">            String.format(</span>
+                &quot;RESUMEN_COMPRA -&gt; total=%.2f&quot;,
+<span class="nc" id="L324">                total</span>
+            )
+        );
+<span class="nc" id="L327">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

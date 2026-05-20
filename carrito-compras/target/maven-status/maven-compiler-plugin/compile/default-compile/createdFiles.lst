@@ -1,6 +1,5 @@
-com\pruebas\model\CarritoCompra.class
-com\pruebas\service\ServicioPrecioImpl.class
-com\pruebas\model\ItemCarrito.class
-com\pruebas\App.class
-com\pruebas\model\Producto.class
-com\pruebas\service\ServicioPrecio.class
+com/pruebas/service/ServicioPrecio.class
+com/pruebas/service/ServicioPrecioImpl.class
+com/pruebas/model/Producto.class
+com/pruebas/model/ItemCarrito.class
+com/pruebas/model/CarritoCompra.class

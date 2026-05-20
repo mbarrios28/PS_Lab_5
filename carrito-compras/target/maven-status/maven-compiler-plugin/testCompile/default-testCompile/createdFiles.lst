@@ -1,2 +1,4 @@
-com\pruebas\AppTest.class
-com\pruebas\model\CarritoCompraTest.class
+com/pruebas/model/CarritoCompraTest.class
+com/pruebas/model/CarritoCompraTest$Parametrizadas.class
+com/pruebas/model/CarritoCompraTest$EdgeCases.class
+com/pruebas/model/CarritoCompraTest$IntegracionServicioPrecio.class

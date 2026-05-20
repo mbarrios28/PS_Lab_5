@@ -2,12 +2,27 @@ package com.pruebas.model;
 
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import com.pruebas.service.ServicioPrecio;
+import com.pruebas.service.ServicioPrecioImpl;
 
 @DisplayName("Pruebas unitarias al carrito de compras")
 public class CarritoCompraTest {
@@ -711,4 +726,395 @@ public class CarritoCompraTest {
                 .contains("ERROR_REMOVE_ITEM")
         );
     }
+
+    @Nested
+    @DisplayName("Integración ServicioPrecio + Mockito")
+    class IntegracionServicioPrecio {
+
+        private ServicioPrecio mockServicio;
+        private CarritoCompra carritoServicio;
+
+        @BeforeEach
+        void setUpServicio() {
+
+            mockServicio = mock(ServicioPrecio.class);
+
+            carritoServicio = new CarritoCompra(mockServicio);
+        }
+
+        // =====================================================
+        // TC-18: calcularTotal llama descuento e impuesto
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-18 calcularTotal llama descuento e impuesto")
+        void testCalcularTotalLlamaMetodosServicio() throws Exception {
+
+            when(mockServicio.calcularDescuento(anyDouble()))
+                    .thenReturn(100.0);
+
+            when(mockServicio.calcularImpuesto(anyDouble()))
+                    .thenReturn(162.0);
+
+            carritoServicio.addItem(
+                new ItemCarrito(listaProductos.get(0), 4)
+            );
+
+            carritoServicio.calcularTotal();
+
+            verify(mockServicio, times(1))
+                    .calcularDescuento(999.6);
+
+            verify(mockServicio, times(1))
+                    .calcularImpuesto(899.6);
+        }
+
+        // =====================================================
+        // TC-19: calcularTotal correcto
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-19 calcularTotal correcto")
+        void testCalcularTotalCorrecto() throws Exception {
+
+            when(mockServicio.calcularDescuento(anyDouble()))
+                    .thenReturn(100.0);
+
+            when(mockServicio.calcularImpuesto(anyDouble()))
+                    .thenReturn(162.0);
+
+            carritoServicio.addItem(
+                new ItemCarrito(listaProductos.get(0), 4)
+            );
+
+            double total = carritoServicio.calcularTotal();
+
+            assertEquals(1061.6, total, 0.01);
+        }
+
+        // =====================================================
+        // TC-20: carrito vacío retorna 0
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-20 carrito vacío retorna 0")
+        void testCarritoVacio() {
+
+            when(mockServicio.calcularDescuento(0.0))
+                    .thenReturn(0.0);
+
+            when(mockServicio.calcularImpuesto(0.0))
+                    .thenReturn(0.0);
+
+            double total = carritoServicio.calcularTotal();
+
+            assertEquals(0.0, total);
+        }
+
+        // =====================================================
+        // TC-21: resumen contiene producto y total
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-21 resumen contiene producto y total")
+        void testResumenCompra() throws Exception {
+
+            when(mockServicio.calcularDescuento(anyDouble()))
+                    .thenReturn(0.0);
+
+            when(mockServicio.calcularImpuesto(anyDouble()))
+                    .thenReturn(179.98);
+
+            carritoServicio.addItem(
+                new ItemCarrito(listaProductos.get(0), 2)
+            );
+
+            String resumen =
+                    carritoServicio.obtenerResumenCompra();
+
+            assertTrue(resumen.contains("Escritorio"));
+
+            assertTrue(resumen.contains("TOTAL"));
+        }
+
+        // =====================================================
+        // TC-22: sin ServicioPrecio lanza excepción
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-22 sin ServicioPrecio")
+        void testSinServicioPrecio() throws Exception {
+
+            CarritoCompra carritoNormal =
+                    new CarritoCompra();
+
+            carritoNormal.addItem(
+                new ItemCarrito(listaProductos.get(0), 1)
+            );
+
+            assertThrows(
+                IllegalStateException.class,
+                carritoNormal::calcularTotal
+            );
+        }
+
+        // =====================================================
+        // TC-23: verify carrito vacío
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-23 verify carrito vacío")
+        void testVerifyCarritoVacio() {
+
+            when(mockServicio.calcularDescuento(0.0))
+                    .thenReturn(0.0);
+
+            when(mockServicio.calcularImpuesto(0.0))
+                    .thenReturn(0.0);
+
+            carritoServicio.calcularTotal();
+
+            verify(mockServicio)
+                    .calcularDescuento(0.0);
+
+            verify(mockServicio)
+                    .calcularImpuesto(0.0);
+
+            verifyNoMoreInteractions(mockServicio);
+        }
+    }
+
+    @Nested
+    @DisplayName("Parametrizadas")
+    class Parametrizadas {
+
+        // =====================================================
+        // TC-24: descuento parametrizado
+        // =====================================================
+        @ParameterizedTest
+        @CsvSource({
+            "0.0,0.0",
+            "100.0,0.0",
+            "200.0,0.0",
+            "201.0,20.1",
+            "500.0,50.0",
+            "1000.0,100.0"
+        })
+        @DisplayName("TC-24 descuento parametrizado")
+        void testDescuentoParametrizado(
+                double subtotal,
+                double esperado
+        ) {
+
+            ServicioPrecio servicio =
+                    new ServicioPrecioImpl();
+
+            double descuento =
+                    servicio.calcularDescuento(subtotal);
+
+            assertEquals(
+                    esperado,
+                    descuento,
+                    0.001
+            );
+        }
+
+        // =====================================================
+        // TC-25: impuesto parametrizado
+        // =====================================================
+
+        @ParameterizedTest
+        @CsvSource({
+            "0.0,0.0",
+            "100.0,18.0",
+            "500.0,90.0",
+            "1000.0,180.0"
+        })
+        @DisplayName("TC-25 impuesto parametrizado")
+        void testImpuestoParametrizado(
+                double subtotal,
+                double esperado
+        ) {
+
+            ServicioPrecio servicio =
+                    new ServicioPrecioImpl();
+
+            double impuesto =
+                    servicio.calcularImpuesto(subtotal);
+
+            assertEquals(
+                    esperado,
+                    impuesto,
+                    0.001
+            );
+        }
+
+        // =====================================================
+        // TC-26: distintos precios
+        // =====================================================
+
+        @ParameterizedTest
+        @ValueSource(doubles = {
+            10.0,
+            100.0,
+            500.0,
+            1500.0,
+            5000.0
+        })
+        @DisplayName("TC-26 distintos precios")
+        void testDistintosPrecios(
+                double precio
+        ) throws Exception {
+
+            ServicioPrecio mockServicio =
+                    mock(ServicioPrecio.class);
+
+            when(mockServicio.calcularDescuento(anyDouble()))
+                    .thenReturn(0.0);
+
+            when(mockServicio.calcularImpuesto(anyDouble()))
+                    .thenReturn(precio * 0.18);
+
+            CarritoCompra carrito =
+                    new CarritoCompra(mockServicio);
+
+            Producto producto =
+                    new Producto(
+                        "Producto Test",
+                        precio,
+                        10
+                    );
+
+            carrito.addItem(
+                    new ItemCarrito(producto, 1)
+            );
+
+            assertDoesNotThrow(
+                    carrito::calcularTotal
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("Edge Cases")
+    class EdgeCases {
+
+        // =====================================================
+        // TC-27: carrito con un producto
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-27 carrito con un producto")
+        void testCarritoUnProducto() throws Exception {
+
+            ServicioPrecio mockServicio =
+                    mock(ServicioPrecio.class);
+
+            when(mockServicio.calcularDescuento(anyDouble()))
+                    .thenReturn(0.0);
+
+            when(mockServicio.calcularImpuesto(anyDouble()))
+                    .thenReturn(9.0);
+
+            CarritoCompra carrito =
+                    new CarritoCompra(mockServicio);
+
+            Producto producto =
+                    new Producto(
+                        "Cuaderno",
+                        50.0,
+                        10
+                    );
+
+            carrito.addItem(
+                    new ItemCarrito(producto, 1)
+            );
+
+            double total =
+                    carrito.calcularTotal();
+
+            assertEquals(59.0, total);
+        }
+
+        // =====================================================
+        // TC-28: carrito con 100 productos
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-28 carrito con 100 productos")
+        void testCarrito100Productos() throws Exception {
+
+            ServicioPrecio mockServicio =
+                    mock(ServicioPrecio.class);
+
+            when(mockServicio.calcularDescuento(anyDouble()))
+                    .thenReturn(0.0);
+
+            when(mockServicio.calcularImpuesto(anyDouble()))
+                    .thenAnswer(
+                        inv -> (double)
+                        inv.getArgument(0) * 0.18
+                    );
+
+            CarritoCompra carrito =
+                    new CarritoCompra(mockServicio);
+
+            double subtotal = 0;
+
+            for (int i = 0; i < 100; i++) {
+
+                Producto producto =
+                        new Producto(
+                            "Producto " + i,
+                            10.0,
+                            5
+                        );
+
+                carrito.addItem(
+                        new ItemCarrito(producto, 1)
+                );
+
+                subtotal += 10.0;
+            }
+
+            double totalEsperado =
+                    subtotal * 1.18;
+
+            double total =
+                    carrito.calcularTotal();
+
+            assertEquals(
+                    totalEsperado,
+                    total,
+                    0.01
+            );
+
+            assertEquals(
+                    100,
+                    carrito.getCarrito().size()
+            );
+        }
+
+        // =====================================================
+        // TC-29: subtotal negativo
+        // =====================================================
+
+        @Test
+        @DisplayName("TC-29 subtotal negativo")
+        void testSubtotalNegativo() {
+
+            ServicioPrecio servicio =
+                    new ServicioPrecioImpl();
+
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> servicio.calcularDescuento(-1.0)
+            );
+
+            assertThrows(
+                IllegalArgumentException.class,
+                () -> servicio.calcularImpuesto(-1.0)
+            );
+        }
+      }
 }
