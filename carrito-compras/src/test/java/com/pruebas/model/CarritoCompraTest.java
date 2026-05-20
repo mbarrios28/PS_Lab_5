@@ -1,9 +1,9 @@
 package com.pruebas.model;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -145,15 +145,15 @@ public class CarritoCompraTest {
     // =========================================================
     @Test
     @DisplayName("TC-08 Quitar unidad reduce cantidad")
-    void testQuitarUnidad() {
+    void testQuitarUnidad() throws Exception {
 
         ItemCarrito item = new ItemCarrito(listaProductos.get(0), 3);
 
         carrito.addItem(item);
 
-        carrito.quitarUnidad(listaProductos.get(0));
+        carrito.removeOneProduct(listaProductos.get(0));
 
-        assertEquals(2, carrito.getItems().get(0).getCantidad());
+        assertEquals(2, carrito.getCarrito().get(0).getCantidad());
     }
 
     // =========================================================
@@ -161,15 +161,15 @@ public class CarritoCompraTest {
     // =========================================================
     @Test
     @DisplayName("TC-09 Quitar última unidad elimina item")
-    void testQuitarUltimaUnidad() {
+    void testQuitarUltimaUnidad() throws Exception {
 
         ItemCarrito item = new ItemCarrito(listaProductos.get(0), 1);
 
         carrito.addItem(item);
 
-        carrito.quitarUnidad(listaProductos.get(0));
+        carrito.removeOneProduct(listaProductos.get(0));
 
-        assertEquals(0, carrito.getItems().size());
+        assertEquals(0, carrito.getCarrito().size());
     }
 
     // =========================================================
@@ -177,13 +177,30 @@ public class CarritoCompraTest {
     // =========================================================
     @Test
     @DisplayName("TC-10 Vaciar carrito")
-    void testVaciarCarrito() {
+    void testVaciarCarrito() throws Exception {
 
         carrito.addItem(new ItemCarrito(listaProductos.get(0), 1));
         carrito.addItem(new ItemCarrito(listaProductos.get(1), 2));
 
         carrito.vaciarCarrito();
 
-        assertEquals(0, carrito.getItems().size());
+        assertEquals(0, carrito.getCarrito().size());
+    }
+
+    // =========================================================
+    // TC-11 → Historial registra operaciones
+    // =========================================================
+    @Test
+    @DisplayName("TC-11 Historial registra operaciones")
+    void testHistorialRegistraOperaciones() {
+
+        carrito.vaciarCarrito();
+
+        assertEquals(1, carrito.getHistorial().size());
+
+        assertEquals(
+            "Vaciar carrito",
+            carrito.getHistorial().get(0)
+        );
     }
 }

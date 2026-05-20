@@ -1,7 +1,8 @@
 package com.pruebas.model;
-import com.pruebas.service.ServicioPrecio;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.pruebas.service.ServicioPrecio;
 
 public class CarritoCompra {
     ArrayList <ItemCarrito> carrito;
@@ -158,6 +159,10 @@ public class CarritoCompra {
  
         this.total = totalFinal;
         return sb.toString();
+    }
+
+    public List<String> getHistorial() {
+        return historial;
     }
 
     public void resumenCompra(){
